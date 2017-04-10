@@ -1,5 +1,4 @@
 #include <iostream>
-#include "some_header.h"
 
 int main(int argc, char *argv[]) {
   if (argc > 1) {

@@ -6,6 +6,6 @@ set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -Wshadow")
 include_directories(include)
 
 set(SOURCE_FILES
-        src/main.cpp include/some_header.h)
+        src/main.cpp src/space_generator.cpp include/space_generator.h src/room.cpp include/room.h)
 
 add_executable(ROS_map_generator ${SOURCE_FILES})
