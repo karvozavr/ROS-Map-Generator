@@ -6,6 +6,12 @@
 
 class Room {
  public:
+  Room(int64_t x = 0, int64_t y = 0, int64_t width = 0, int64_t height = 0)
+      : x_pos_(x),
+        y_pos_(y),
+        width_(width),
+        height_(height) {}
+
   int64_t getTop() const;
   int64_t getBottom() const;
   int64_t getLeft() const;

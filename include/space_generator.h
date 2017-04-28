@@ -13,10 +13,12 @@
 
 class SpaceGenerator {
  public:
+  SpaceGenerator(size_t amount, int64_t size, int64_t coordinate);
   // separates overlapping rooms (allowing to overlap by `padding`)
-  void separateRooms(int64_t padding = 1);
+  std::vector<Room> &rooms();
 
  private:
+  void separateRooms(int64_t padding = 1);
   std::vector<Room> rooms_;
 };
 

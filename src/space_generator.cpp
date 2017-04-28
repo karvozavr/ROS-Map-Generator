@@ -44,6 +44,7 @@ void SpaceGenerator::separateRooms(int64_t padding) {
           // create a delta for each rectangle as half the whole delta.
           delta_x_a = -delta_x / 2;
           delta_x_b = delta_x + delta_x_a;
+
           // same for y
           delta_y_a = -delta_y / 2;
           delta_y_b = delta_y + delta_y_a;
@@ -55,4 +56,20 @@ void SpaceGenerator::separateRooms(int64_t padding) {
       }
     }
   } while (touching); // loop until no rectangles are touching
+}
+
+SpaceGenerator::SpaceGenerator(size_t amount, int64_t size, int64_t coordinate) {
+  for (int i = 0; i < amount; ++i) {
+    rooms_.push_back(Room(rand() % coordinate + coordinate,
+                          rand() % coordinate + coordinate,
+                          rand() % size + size,
+                          rand() % size + size
+    ));
+  }
+
+  separateRooms();
+}
+
+std::vector<Room> &SpaceGenerator::rooms() {
+  return rooms_;
 }
