@@ -32,6 +32,18 @@ bool Room::touches(const Room &other, int64_t padding) const {
          getTop() - padding > other.getBottom();
 }
 
+double Room::getCenterX() const {
+  return (getLeft() + getRight()) / 2.0;
+}
+
+double Room::getCenterY() const {
+  return (getLeft() + getRight()) / 2.0;
+}
+
+size_t Room::id() const {
+  return id_;
+}
+
 bool Room::CompareBySquare::operator()(const Room &lhs, const Room &rhs) const {
   return lhs.getSquare() < rhs.getSquare();
 }

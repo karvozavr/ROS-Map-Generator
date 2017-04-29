@@ -1,7 +1,6 @@
 #ifndef ROS_MAP_GENERATOR_ROOM_H
 #define ROS_MAP_GENERATOR_ROOM_H
 
-
 #include <zconf.h>
 
 class Room {
@@ -10,13 +9,17 @@ class Room {
       : x_pos_(x),
         y_pos_(y),
         width_(width),
-        height_(height) {}
+        height_(height),
+        id_(static_cast<size_t>(this)){}
 
   int64_t getTop() const;
   int64_t getBottom() const;
   int64_t getLeft() const;
   int64_t getRight() const;
   int64_t getSquare() const;
+  double getCenterX() const;
+  double getCenterY() const;
+  size_t id() const;
 
   void relocate(int64_t delta_x, int64_t delta_y);
 
@@ -35,6 +38,8 @@ class Room {
   };
 
  private:
+  size_t id_;
+
   int64_t x_pos_;
   int64_t y_pos_;
 
