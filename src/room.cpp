@@ -37,21 +37,41 @@ double Room::getCenterX() const {
 }
 
 double Room::getCenterY() const {
-  return (getLeft() + getRight()) / 2.0;
+  return (getBottom() + getTop()) / 2.0;
 }
 
-size_t Room::id() const {
-  return id_;
+
+Room::Room(Randomizer<int64_t> *random, int64_t corridor_width, int64_t x, int64_t y, int64_t width, int64_t height)
+    : x_pos_(x),
+      y_pos_(y),
+      width_(width),
+      height_(height),
+      random_(random) {
+
+  if (corridor_width != 0) {
+    if (height_ > 2 * corridor_width && width > 2 * corridor_width) {
+      for (int i = 0; i < std::min(width_, height_) / corridor_width; ++i) {
+        int64_t kek1 = std::abs(random_->next_rand()) % corridor_width + corridor_width;
+        int64_t   kek2 = std::abs(random_->next_rand()) % corridor_width + corridor_width;
+        obstacles_.push_back(Room(std::abs(random_->next_rand()) % width_,
+                                  std::abs(random_->next_rand()) % height_,
+                                  kek1,
+                                  kek2
+        ));
+      }
+
+      for (auto obstacle = obstacles_.begin(); obstacle != obstacles_.end(); ++obstacle) {
+        if (obstacle->getTop() >= height_ - corridor_width ||
+            obstacle->getBottom() < 0 + corridor_width||
+            obstacle->getRight() >= width_ - corridor_width ||
+            obstacle->getLeft() < 0 + corridor_width) {
+          obstacles_.erase(obstacle--);
+        }
+      }
+    }
+  }
 }
 
 bool Room::CompareBySquare::operator()(const Room &lhs, const Room &rhs) const {
   return lhs.getSquare() < rhs.getSquare();
-}
-
-bool Room::CompareByX::operator()(const Room &lhs, const Room &rhs) const {
-  return lhs.x_pos_ < rhs.x_pos_;
-}
-
-bool Room::CompareByY::operator()(const Room &lhs, const Room &rhs) const {
-  return lhs.y_pos_ < rhs.y_pos_;
 }

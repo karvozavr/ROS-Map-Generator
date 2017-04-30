@@ -1,50 +1,80 @@
 #include <iostream>
 #include "ros_navigation_environment.h"
-#include "ros_map_printer.h"
+#include "ros_navigation_environment_renderer.h"
+#include "boost/program_options.hpp"
 #include <vector>
 #include <ctime>
 #include <fstream>
 
+
+using namespace boost::program_options;
+
 int main(int argc, char *argv[]) {
 
-  srand(time(NULL));
-  RosNavigationEnvironment nav_space(100, 60, 300, 80, 2500, 5000);
+  try {
+    size_t room_amount = 30;
+    double resolution = 0.05;
+    double robot_size = 0.5;
+    std::string out_file = "saved.pgm";
+    bool obstacles = false;
 
-  std::ofstream out_stream;
-  out_stream.open("saved.pgm");
+    boost::program_options::options_description desc("Allowed options");
+    desc.add_options()
+        ("help,h", "print usage message")
 
-  RosNavigationEnvironmentRenderer renderer(out_stream, nav_space);
-  renderer.render();
-  renderer.save_to_pgm();
+        ("complexity,c", boost::program_options::value(&room_amount)->required(),
+         "complexity of environment (aka number of rooms)")
 
-  /*size_t size = 2048;
-  std::vector<std::vector<int>> space(size + 1000, std::vector<int>(size + 1000, 0));
+        ("resolution,r", boost::program_options::value(&resolution),
+         "resolution of the map: meters per pixel (0.05 by default)")
 
-  for (Room &room : nav_space.rooms()) {
-    for (int64_t i = room.getLeft(); i < room.getRight(); ++i) {
-      for (int64_t j = room.getBottom(); j < room.getTop(); ++j) {
-        space[i][j] = 255;
-      }
+        ("robot-size,s", boost::program_options::value(&robot_size), "size of the robot in meters (0.5 by default)"),
+        ("output-file,f", boost::program_options::value(&out_file), "output file name"),
+
+        ("obstacles,o", boost::program_options::bool_switch(&obstacles),
+         "generate obstacles inside rooms (false by default)")
+        ;
+
+
+    boost::program_options::variables_map variables_map;
+    boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), variables_map);
+
+    if (variables_map.count("help")) {
+      std::cout << desc << std::endl;
+      return 0;
     }
+
+    // throws an exception if program arguments error has occurred
+    variables_map.notify();
+
+    if (room_amount == 0) {
+      room_amount = 1;
+    }
+
+    int64_t min_size = static_cast<int64_t>((robot_size / resolution) * 8);
+    int64_t max_size = min_size * 3;
+    int64_t corridor_width = static_cast<int64_t>((robot_size / resolution) * 2);
+    size_t map_size = static_cast<size_t>((static_cast<int64_t>(room_amount * 2) + max_size) * 10);
+
+    Randomizer<int64_t> randomizer;
+    RosNavigationEnvironment nav_space(room_amount * 2,
+                                       min_size,
+                                       max_size,
+                                       corridor_width,
+                                       map_size,
+                                       map_size,
+                                       &randomizer,
+                                       obstacles);
+
+    std::ofstream out_stream;
+    out_stream.open(out_file);
+
+    RosNavigationEnvironmentRenderer renderer(out_stream, nav_space);
+    renderer.save_to_pgm();
+
+  } catch (std::exception &e) {
+    std::cerr << e.what() << std::endl;
   }
-
-  for (int64_t i = 0; i < size; ++i) {
-    for (int64_t j = 0; j < size; ++j) {
-      bool flag = true;
-      for (int k = -1; k <= 1; ++k) {
-        for (int l = -1; l <= 1; ++l) {
-          if (i != 0 && j != 0 && space[i + k][j + l] == 255) {
-            flag = false;
-          }
-        }
-      }
-      if (flag && space[i][j] == 0) {
-        space[i][j] = 204;
-      }
-    }
-  }*/
-
-
 
   return 0;
 }

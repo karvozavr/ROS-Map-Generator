@@ -1,12 +1,26 @@
-#include "ros_map_printer.h"
-#include "costmap_2d/costmap_2d.h"
+#include "ros_navigation_environment_renderer.h"
+
 void RosNavigationEnvironmentRenderer::render() {
 
-  costmap_2d::Costmap2D map();
   for (const Room &room : environment_.rooms()) {
+    if (room.getTop() >= environment_.height() ||
+        room.getBottom() < 0 ||
+        room.getRight() >= environment_.width() ||
+        room.getLeft() < 0) {
+      continue;
+    }
+
     for (int64_t x = room.getLeft(); x < room.getRight(); ++x) {
       for (int64_t y = room.getBottom(); y < room.getTop(); ++y) {
         space[x][y] = 255;
+      }
+    }
+
+    for (const Room &obstacle : room.obstacles()) {
+      for (int64_t x = obstacle.getLeft(); x < obstacle.getRight(); ++x) {
+        for (int64_t y = obstacle.getBottom(); y < obstacle.getTop(); ++y) {
+          space[x + room.getLeft()][y + room.getBottom()] = 0;
+        }
       }
     }
   }
@@ -33,12 +47,14 @@ void RosNavigationEnvironmentRenderer::render() {
 }
 
 void RosNavigationEnvironmentRenderer::save_to_pgm() {
+  render();
+
   out_stream_ << "P2" << '\n';
   out_stream_ << environment_.width() << ' ' << environment_.height() << '\n' << "255" << '\n';
 
-  for (int64_t x = 0; x < environment_.width(); ++x) {
-    for (int64_t y = 0; y < environment_.height(); ++y) {
-      out_stream_ << static_cast<int>(space[x][y]) << ' ';
+  for (int64_t y = 0; y < environment_.height(); ++y) {
+    for (int64_t x = 0; x < environment_.width(); ++x) {
+      out_stream_ << static_cast<int>(space[x][environment_.height() - y]) << ' ';
     }
 
     out_stream_ << std::endl;

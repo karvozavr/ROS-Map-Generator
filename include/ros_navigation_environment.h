@@ -1,5 +1,5 @@
 /*
- * SpaceGenerator class used for generation of space containing rooms connected by corridors.
+ * SpaceGenerator class used for generation of space containing halls connected by corridors.
  *
  */
 
@@ -9,29 +9,37 @@
 #include <vector>
 #include <list>
 #include <algorithm>
+#include <iostream>
 #include <boost/graph/adjacency_list.hpp>
 
 #include "room.h"
+#include "randomizer.h"
 
 class RosNavigationEnvironment {
  public:
-  using graph_t = boost::adjacency_list<boost::listS, boost::listS, boost::bidirectionalS> ;
+  struct VertexStorage {
+    Room *room;
+  };
+
+  using graph_t = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS, VertexStorage>;
 
   /**
    * Constructor of environment will randomly generate environment of parameters
    * @param amount amount of Rooms
-   * @param min_size
-   * @param max_size
-   * @param coordinate
-   * @param center
-   * @param size
+   * @param min_size minimal possible size of a room
+   * @param max_size maximal possible size of a room
+   * @param corridor_width width of corridors
+   * @param width width of navigation environment
+   * @param height height of navigation environment
    */
   RosNavigationEnvironment(size_t amount,
                            int64_t min_size,
                            int64_t max_size,
-                           int64_t coordinate,
-                           int64_t center,
-                           size_t size);
+                           int64_t corridor_width,
+                           size_t width,
+                           size_t height,
+                           Randomizer<int64_t> *random,
+                           bool obstacles = true);
 
   const std::vector<Room> &rooms() const { return rooms_; };
 
@@ -47,7 +55,12 @@ class RosNavigationEnvironment {
   void separateRooms(int64_t padding = 1);
 
   /**
-   * connect rooms and create graph of them
+   * Create relative neighborhood graph (RNG) of rooms
+   */
+  void createRNG();
+
+  /**
+   * Connect rooms with hallways
    */
   void connectRooms();
 
@@ -56,16 +69,15 @@ class RosNavigationEnvironment {
    */
   void removeOverboundingRooms();
 
-  /**
-   * set of rooms
-   */
   std::vector<Room> rooms_;
-  std::vector<Room> halls_;
-  std::vector<graph_t::vertex_descriptor> hall_vertices_;
+  std::vector<graph_t::vertex_descriptor> room_vertices_;
   graph_t room_graph_;
 
   size_t width_;
   size_t height_;
+  int64_t corridor_width_;
+
+  Randomizer<int64_t> *random_;
 };
 
 
