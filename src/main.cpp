@@ -22,17 +22,17 @@ int main(int argc, char *argv[]) {
     desc.add_options()
         ("help,h", "print usage message")
 
+        ("obstacles,o", boost::program_options::bool_switch(&obstacles),
+         "generate obstacles inside rooms (false by default)")
+        
         ("complexity,c", boost::program_options::value(&room_amount)->required(),
          "complexity of environment (aka number of rooms)")
 
         ("resolution,r", boost::program_options::value(&resolution),
          "resolution of the map: meters per pixel (0.05 by default)")
 
-        ("robot-size,s", boost::program_options::value(&robot_size), "size of the robot in meters (0.5 by default)"),
-        ("output-file,f", boost::program_options::value(&out_file), "output file name"),
-
-        ("obstacles,o", boost::program_options::bool_switch(&obstacles),
-         "generate obstacles inside rooms (false by default)")
+        ("robot-size,s", boost::program_options::value(&robot_size), "size of the robot in meters (0.5 by default)")
+        ("output-file,f", boost::program_options::value(&out_file), "output file name")
         ;
 
 
