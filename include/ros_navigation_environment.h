@@ -21,7 +21,7 @@ class RosNavigationEnvironment {
     Room *room;
   };
 
-  using graph_t = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS, VertexStorage>;
+  using graph_t = boost::adjacency_list<boost::listS, boost::listS, boost::bidirectionalS, VertexStorage>;
 
   /**
    * Constructor of environment will randomly generate environment of parameters
@@ -43,8 +43,14 @@ class RosNavigationEnvironment {
 
   const std::vector<Room> &rooms() const { return rooms_; };
 
+  /**
+   * @return width of navigation environment
+   */
   size_t width() const { return width_; }
 
+  /**
+   * @return height of navigation environment
+   */
   size_t height() const { return height_; }
 
  private:

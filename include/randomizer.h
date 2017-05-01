@@ -10,14 +10,22 @@
 #include <chrono>
 #include <random>
 
-template<typename T, typename distribution_type = std::extreme_value_distribution<float>>
+template<typename T, typename distribution_type = std::normal_distribution<float>>
 class Randomizer {
  public:
+  /**
+   * Randomizer basic constructor
+   * @param seed seed for pseudo-random number generation
+   */
   Randomizer(int64_t seed = std::chrono::system_clock::now().time_since_epoch().count())
       : seed_(seed),
         random_generator_(seed),
-        distribution_(distribution_type(INT64_MAX / 2, INT64_MAX / 8)) {}
+        distribution_(distribution_type(INT64_MAX / 2, INT64_MAX / 32)) {}
 
+  /**
+   * get random number
+   * @return generated random number
+   */
   T next_rand();
 
  private:

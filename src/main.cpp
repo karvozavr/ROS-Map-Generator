@@ -6,8 +6,11 @@
 #include <ctime>
 #include <fstream>
 
-
-using namespace boost::program_options;
+void save_yaml(const std::string &file_name, std::ostream &out_file, double resolution) {
+  out_file << "image: " << file_name << '\n';
+  out_file << "resolution: " << resolution << '\n';
+  out_file << "origin: [0.0, 0.0, 0.0]\noccupied_thresh: 0.65\nfree_thresh: 0.196\nnegate: 0\n" << '\n';
+}
 
 int main(int argc, char *argv[]) {
 
@@ -15,8 +18,10 @@ int main(int argc, char *argv[]) {
     size_t room_amount = 30;
     double resolution = 0.05;
     double robot_size = 0.5;
-    std::string out_file = "saved.pgm";
+    std::string out_file = "occupancy_grid";
+    std::string out_dir;
     bool obstacles = false;
+    int64_t seed = std::chrono::system_clock::now().time_since_epoch().count();
 
     boost::program_options::options_description desc("Allowed options");
     desc.add_options()
@@ -32,7 +37,12 @@ int main(int argc, char *argv[]) {
          "resolution of the map: meters per pixel (0.05 by default)")
 
         ("robot-size,s", boost::program_options::value(&robot_size), "size of the robot in meters (0.5 by default)")
-        ("output-file,f", boost::program_options::value(&out_file), "output file name")
+
+        ("output-dir,d", boost::program_options::value(&out_dir), "output file directory")
+
+        ("name,n", boost::program_options::value(&out_file), "output file name")
+
+        ("random-seed", boost::program_options::value(&seed), "seed for pseudo-random number generation")
         ;
 
 
@@ -56,7 +66,7 @@ int main(int argc, char *argv[]) {
     int64_t corridor_width = static_cast<int64_t>((robot_size / resolution) * 2);
     size_t map_size = static_cast<size_t>((static_cast<int64_t>(room_amount * 2) + max_size) * 10);
 
-    Randomizer<int64_t> randomizer;
+    Randomizer<int64_t> randomizer(seed);
     RosNavigationEnvironment nav_space(room_amount * 2,
                                        min_size,
                                        max_size,
@@ -67,13 +77,18 @@ int main(int argc, char *argv[]) {
                                        obstacles);
 
     std::ofstream out_stream;
-    out_stream.open(out_file);
+    out_stream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
+    out_stream.open(out_dir + out_file + ".pgm");
     RosNavigationEnvironmentRenderer renderer(out_stream, nav_space);
     renderer.save_to_pgm();
 
-  } catch (std::exception &e) {
-    std::cerr << e.what() << std::endl;
+    out_stream.close();
+    out_stream.open(out_dir + out_file + ".yaml");
+    save_yaml(out_file + ".pgm", out_stream, resolution);
+
+  } catch (std::exception &exception) {
+    std::cerr << exception.what() << std::endl;
   }
 
   return 0;

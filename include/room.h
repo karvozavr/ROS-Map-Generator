@@ -8,6 +8,13 @@
 
 class Room {
  public:
+  /**
+   * basic room constructor
+   * @param x
+   * @param y y relative position
+   * @param width width of room
+   * @param height height of room
+   */
   Room(int64_t x = 0, int64_t y = 0, int64_t width = 0, int64_t height = 0) :
       x_pos_(x),
       y_pos_(y),
@@ -16,6 +23,15 @@ class Room {
     assert(height >= 0);
   }
 
+  /**
+   * Room constructor for obstacles generation
+   * @param random randomizer
+   * @param corridor_width width of corridor
+   * @param x
+   * @param y y relative position
+   * @param width width of room
+   * @param height height of room
+   */
   Room(Randomizer<int64_t> *random, int64_t corridor_width,
        int64_t x = 0, int64_t y = 0, int64_t width = 0, int64_t height = 0);
 
@@ -29,8 +45,19 @@ class Room {
 
   const std::vector<Room> &obstacles() const { return obstacles_; }
 
+  /**
+   * change room coordinates by
+   * @param delta_x
+   * @param delta_y
+   */
   void relocate(int64_t delta_x, int64_t delta_y);
 
+  /**
+   * check, if this room intersects with other (allowed to intersect by padding)
+   * @param other
+   * @param padding
+   * @return intersects with allowed padding -> true, else -> false
+   */
   bool touches(const Room &other, int64_t padding) const;
 
   struct CompareBySquare {
