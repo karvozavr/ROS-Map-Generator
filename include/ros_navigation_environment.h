@@ -10,8 +10,8 @@
 #include <list>
 #include <algorithm>
 #include <iostream>
-#include <boost/graph/adjacency_list.hpp>
 
+#include "graph.h"
 #include "room.h"
 #include "randomizer.h"
 
@@ -20,8 +20,6 @@ class RosNavigationEnvironment {
   struct VertexStorage {
     Room *room;
   };
-
-  using graph_t = boost::adjacency_list<boost::listS, boost::listS, boost::bidirectionalS, VertexStorage>;
 
   /**
    * Constructor of environment will randomly generate environment of parameters
@@ -76,8 +74,7 @@ class RosNavigationEnvironment {
   void removeOverboundingRooms();
 
   std::vector<Room> rooms_;
-  std::vector<graph_t::vertex_descriptor> room_vertices_;
-  graph_t room_graph_;
+  Graph<Room *> room_graph_;
 
   size_t width_;
   size_t height_;

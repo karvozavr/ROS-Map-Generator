@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
     std::ofstream out_stream;
     out_stream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
-    out_stream.open(out_dir + out_file + ".pgm");
+    out_stream.open(out_dir + out_file + ".pgm", std::ios::binary);
     RosNavigationEnvironmentRenderer renderer(out_stream, nav_space);
     renderer.save_to_pgm();
 

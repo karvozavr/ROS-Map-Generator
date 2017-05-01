@@ -49,14 +49,12 @@ void RosNavigationEnvironmentRenderer::render() {
 void RosNavigationEnvironmentRenderer::save_to_pgm() {
   render();
 
-  out_stream_ << "P2" << '\n';
+  out_stream_ << "P5" << '\n';
   out_stream_ << environment_.width() << ' ' << environment_.height() << '\n' << "255" << '\n';
 
   for (int64_t y = 0; y < environment_.height(); ++y) {
     for (int64_t x = 0; x < environment_.width(); ++x) {
-      out_stream_ << static_cast<int>(space[x][environment_.height() - y]) << ' ';
+      out_stream_.write(reinterpret_cast<char*>(&(space[x][environment_.height() - y])), sizeof(uint8_t));
     }
-
-    out_stream_ << std::endl;
   }
 }

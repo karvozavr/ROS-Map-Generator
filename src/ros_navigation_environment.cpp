@@ -101,18 +101,6 @@ void RosNavigationEnvironment::createRNG() {
   size_t hall_size = rooms_.size() / 2;
   std::sort(rooms_.begin(), rooms_.end(), Room::CompareBySquare());
   rooms_.resize(hall_size);
-  room_vertices_.resize(hall_size);
-
-  // associate halls and vertex descriptors
-  {
-    auto room = rooms_.begin();
-    auto vertex = room_vertices_.begin();
-
-    for (room, vertex; room != rooms_.end() && vertex != room_vertices_.end(); ++room, ++vertex) {
-      *vertex = boost::add_vertex(room_graph_);
-      room_graph_[*vertex].room = &(*room);
-    }
-  }
 
   // squared distance between each of the 3 halls
   double a_to_b_distance;
@@ -124,10 +112,8 @@ void RosNavigationEnvironment::createRNG() {
 
   // for each pair of halls and their associated vertices
 
-  auto vertex_a = room_vertices_.begin();
-  for (auto room_a = rooms_.begin(); room_a != rooms_.end() && vertex_a != room_vertices_.end(); ++room_a, ++vertex_a) {
-    auto vertex_b = vertex_a + 1;
-    for (auto room_b = room_a + 1; room_b != rooms_.end() && vertex_b != room_vertices_.end(); ++room_b, ++vertex_b) {
+  for (auto room_a = rooms_.begin(); room_a != rooms_.end(); ++room_a) {
+    for (auto room_b = room_a + 1; room_b != rooms_.end(); ++room_b) {
       skip = false;
 
       // get the squared distance between a and b
@@ -162,8 +148,7 @@ void RosNavigationEnvironment::createRNG() {
 
       // if this (a, b) pair was never skipped, it should be an edge
       if (!skip) {
-        if (vertex_a != vertex_b)
-          boost::add_edge(*vertex_a, *vertex_b, room_graph_);
+        room_graph_.add_edge(&*room_a, &*room_b);
       }
     }
   }
@@ -182,43 +167,40 @@ void RosNavigationEnvironment::connectRooms() {
   const Room *room_b;
 
   // iterate trough all edges
-  auto vertices = boost::vertices(room_graph_);
-  for (auto vertex_it = vertices.first; vertex_it != vertices.second; ++vertex_it) {
-    auto neighbors = boost::adjacent_vertices(*vertex_it, room_graph_);
-    for (auto neighbors_it = neighbors.first; neighbors_it != neighbors.second; ++neighbors_it) {
+  for (const std::pair<Room *, Room *> &edge : room_graph_.edges()) {
 
-      // ensure A is never to the right of B;
-      if (room_graph_[*vertex_it].room->getCenterX() < room_graph_[*neighbors_it].room->getCenterX()) {
-        room_a = room_graph_[*vertex_it].room;
-        room_b = room_graph_[*neighbors_it].room;
-      } else {
-        room_a = room_graph_[*neighbors_it].room;
-        room_b = room_graph_[*vertex_it].room;
-      }
+    // ensure A is never to the right of B;
+    if (edge.first->getCenterX() < edge.second->getCenterX()) {
+      room_a = edge.first;
+      room_b = edge.second;
+    } else {
+      room_a = edge.second;
+      room_b = edge.first;
+    }
 
-      // the starting points
-      a_x = static_cast<int64_t>(room_a->getCenterX());
-      a_y = static_cast<int64_t>(room_a->getCenterY());
+    // the starting points
+    a_x = static_cast<int64_t>(room_a->getCenterX());
+    a_y = static_cast<int64_t>(room_a->getCenterY());
 
-      b_x = static_cast<int64_t>(room_b->getCenterX());
-      b_y = static_cast<int64_t>(room_b->getCenterY());
+    b_x = static_cast<int64_t>(room_b->getCenterX());
+    b_y = static_cast<int64_t>(room_b->getCenterY());
 
-      assert(a_x <= b_x);
+    assert(a_x <= b_x);
 
-      // the deltas from A to B
-      delta_x = static_cast<int64_t>(b_x - a_x);
-      delta_y = static_cast<int64_t>(b_y - a_y);
+    // the deltas from A to B
+    delta_x = static_cast<int64_t>(b_x - a_x);
+    delta_y = static_cast<int64_t>(b_y - a_y);
 
 
-      // randomly bend clockwise or counter clockwise
-      if (random_->next_rand() % 2) {
-        rooms_.push_back(Room(a_x, a_y, std::abs(delta_x) + corridor_width_, corridor_width_)); // horizontal
-        rooms_.push_back(Room(b_x, std::min(a_y, b_y), corridor_width_, std::abs(delta_y))); // vertical
-      } else {
-        rooms_.push_back(Room(a_x, std::min(a_y, b_y), corridor_width_, std::abs(delta_y))); // same as above
-        rooms_.push_back(Room(a_x, b_y, std::abs(delta_x), corridor_width_)); // swapped horizontal and vertical
-      }
+    // randomly bend clockwise or counter clockwise
+    if (random_->next_rand() % 2) {
+      rooms_.push_back(Room(a_x, a_y, std::abs(delta_x) + corridor_width_, corridor_width_)); // horizontal
+      rooms_.push_back(Room(b_x, std::min(a_y, b_y), corridor_width_, std::abs(delta_y))); // vertical
+    } else {
+      rooms_.push_back(Room(a_x, std::min(a_y, b_y), corridor_width_, std::abs(delta_y))); // same as above
+      rooms_.push_back(Room(a_x, b_y, std::abs(delta_x), corridor_width_)); // swapped horizontal and vertical
     }
   }
+
 }
 
