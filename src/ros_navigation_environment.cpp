@@ -172,7 +172,7 @@ void RosNavigationEnvironment::connectRooms() {
   // iterate trough all edges
   for (const std::pair<Room *, Room *> &edge : room_graph_.edges()) {
 
-    // ensure A is never to the right of B;
+    // ensure room_a is never to the right of room_b;
     if (edge.first->getCenterX() < edge.second->getCenterX()) {
       room_a = edge.first;
       room_b = edge.second;
@@ -188,25 +188,37 @@ void RosNavigationEnvironment::connectRooms() {
     b_x = static_cast<int64_t>(room_b->getCenterX());
     b_y = static_cast<int64_t>(room_b->getCenterY());
 
-    // the deltas from A to B
+    // the deltas from room_a to room_b
     delta_x = static_cast<int64_t>(b_x - a_x);
     delta_y = static_cast<int64_t>(b_y - a_y);
 
 
     // randomly bend clockwise or counter clockwise
     if (random_->next_rand() % 2) {
-      corridors.push_back(Room(a_x, a_y, std::abs(delta_x) + corridor_width_, corridor_width_)); // horizontal
-      corridors.push_back(Room(b_x, std::min(a_y, b_y), corridor_width_, std::abs(delta_y))); // vertical
+      corridors.push_back(Room(a_x - corridor_width_ / 2,
+                               a_y - corridor_width_ / 2,
+                               std::abs(delta_x) + corridor_width_,
+                               corridor_width_)); // horizontal
+
+      corridors.push_back(Room(b_x - corridor_width_ / 2,
+                               std::min(a_y, b_y) - corridor_width_ / 2,
+                               corridor_width_,
+                               std::abs(delta_y))); // vertical
     } else {
-      corridors.push_back(Room(a_x, std::min(a_y, b_y), corridor_width_, std::abs(delta_y))); // same as above
-      corridors.push_back(Room(a_x, b_y, std::abs(delta_x), corridor_width_)); // swapped horizontal and vertical
+      corridors.push_back(Room(a_x - corridor_width_ / 2,
+                               std::min(a_y, b_y) - corridor_width_ / 2,
+                               corridor_width_,
+                               std::abs(delta_y))); // vertical
+
+      corridors.push_back(Room(a_x - corridor_width_ / 2,
+                               b_y - corridor_width_ / 2,
+                               std::abs(delta_x),
+                               corridor_width_)); // horizontal
     }
   }
 
-  rooms_.insert(
-      rooms_.end(),
-      std::make_move_iterator(corridors.begin()),
-      std::make_move_iterator(corridors.end())
-  );
+  rooms_.insert(rooms_.end(),
+                std::make_move_iterator(corridors.begin()),
+                std::make_move_iterator(corridors.end()));
 }
 

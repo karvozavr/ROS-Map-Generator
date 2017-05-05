@@ -10,7 +10,7 @@
 #include <chrono>
 #include <random>
 
-template<typename T, typename distribution_type = std::normal_distribution<float>>
+template<typename T, typename distribution_type = std::normal_distribution<>>
 class Randomizer {
  public:
   /**
@@ -20,7 +20,7 @@ class Randomizer {
   Randomizer(int64_t seed = std::chrono::system_clock::now().time_since_epoch().count())
       : seed_(seed),
         random_generator_(seed),
-        distribution_(distribution_type(INT64_MAX / 2, INT64_MAX / 32)) {}
+        distribution_(distribution_type(INT64_MAX / 4, INT64_MAX / 16)) {}
 
   /**
    * get random number

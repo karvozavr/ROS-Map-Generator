@@ -27,7 +27,7 @@ class Room {
    * Room constructor for obstacles generation
    * @param random randomizer
    * @param corridor_width width of corridor
-   * @param x
+   * @param x x relative position
    * @param y y relative position
    * @param width width of room
    * @param height height of room

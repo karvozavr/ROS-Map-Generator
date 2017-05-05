@@ -51,12 +51,10 @@ Room::Room(Randomizer<int64_t> *random, int64_t corridor_width, int64_t x, int64
   if (corridor_width != 0) {
     if (height_ > 2 * corridor_width && width > 2 * corridor_width) {
       for (int i = 0; i < std::min(width_, height_) / corridor_width; ++i) {
-        int64_t kek1 = std::abs(random_->next_rand()) % corridor_width + corridor_width;
-        int64_t   kek2 = std::abs(random_->next_rand()) % corridor_width + corridor_width;
         obstacles_.push_back(Room(std::abs(random_->next_rand()) % width_,
                                   std::abs(random_->next_rand()) % height_,
-                                  kek1,
-                                  kek2
+                                  std::abs(random_->next_rand()) % corridor_width + corridor_width,
+                                  std::abs(random_->next_rand()) % corridor_width + corridor_width
         ));
       }
 

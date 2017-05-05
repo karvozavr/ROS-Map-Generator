@@ -49,12 +49,44 @@ void RosNavigationEnvironmentRenderer::render() {
 void RosNavigationEnvironmentRenderer::save_to_pgm() {
   render();
 
+  int64_t min_x = INT64_MAX;
+  int64_t max_x = 0;
+  int64_t min_y = INT64_MAX;
+  int64_t max_y = 0;
+
+  for (const Room &room : environment_.rooms()) {
+    min_x = std::min(min_x, room.getLeft());
+    min_y = std::min(min_y, room.getBottom());
+
+    max_x = std::max(max_x, room.getRight());
+    max_y = std::max(max_y, room.getTop());
+  }
+
+  ++max_x;
+  ++max_y;
+
+  if (min_x > 0) {
+    --min_x;
+  }
+
+  if (min_y > 0) {
+    --min_y;
+  }
+
   out_stream_ << "P5" << '\n';
-  out_stream_ << environment_.width() << ' ' << environment_.height() << '\n' << "255" << '\n';
+  out_stream_ << max_x - min_x << ' ' << max_y - min_y << '\n' << "255" << '\n';
+
+  for (int64_t y = min_y; y < max_y; ++y) {
+    for (int64_t x = min_x; x < max_x; ++x) {
+      out_stream_.write(reinterpret_cast<char*>(&(space[x][y])), sizeof(uint8_t));
+    }
+  }
+
+/*  out_stream_ << environment_.width() << ' ' << environment_.height() << '\n' << "255" << '\n';
 
   for (int64_t y = 0; y < environment_.height(); ++y) {
     for (int64_t x = 0; x < environment_.width(); ++x) {
       out_stream_.write(reinterpret_cast<char*>(&(space[x][environment_.height() - y])), sizeof(uint8_t));
     }
-  }
+  }*/
 }
