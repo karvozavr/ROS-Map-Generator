@@ -11,7 +11,8 @@ set(SOURCE_FILES
         src/room.cpp
         src/ros_navigation_environment.cpp
         src/ros_navigation_environment_renderer.cpp
-        include/randomizer.h)
+        include/randomizer.h
+        include/graph.h)
 
 include_directories(include)
 

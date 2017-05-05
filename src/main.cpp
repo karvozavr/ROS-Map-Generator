@@ -2,8 +2,6 @@
 #include "ros_navigation_environment.h"
 #include "ros_navigation_environment_renderer.h"
 #include "boost/program_options.hpp"
-#include <vector>
-#include <ctime>
 #include <fstream>
 
 void save_yaml(const std::string &file_name, std::ostream &out_file, double resolution) {
@@ -64,7 +62,7 @@ int main(int argc, char *argv[]) {
     int64_t min_size = static_cast<int64_t>((robot_size / resolution) * 8);
     int64_t max_size = min_size * 3;
     int64_t corridor_width = static_cast<int64_t>((robot_size / resolution) * 2);
-    size_t map_size = static_cast<size_t>((static_cast<int64_t>(room_amount * 2) + max_size) * 10);
+    size_t map_size = static_cast<size_t>(std::sqrt(room_amount) * max_size * 2);
 
     Randomizer<int64_t> randomizer(seed);
     RosNavigationEnvironment nav_space(room_amount * 2,

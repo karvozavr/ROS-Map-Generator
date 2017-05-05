@@ -10,6 +10,7 @@
 #include <list>
 #include <algorithm>
 #include <iostream>
+#include <boost/shared_ptr.hpp>
 
 #include "graph.h"
 #include "room.h"

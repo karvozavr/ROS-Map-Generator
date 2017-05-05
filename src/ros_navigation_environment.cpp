@@ -97,10 +97,12 @@ void RosNavigationEnvironment::removeOverboundingRooms() {
 
 void RosNavigationEnvironment::createRNG() {
 
-  // choose the biggest halls as halls
-  size_t hall_size = rooms_.size() / 2;
-  std::sort(rooms_.begin(), rooms_.end(), Room::CompareBySquare());
-  rooms_.resize(hall_size);
+  // choose the biggest rooms as halls
+  {
+    size_t hall_size = rooms_.size() / 2;
+    std::sort(rooms_.begin(), rooms_.end(), Room::CompareBySquare());
+    rooms_.resize(hall_size);
+  }
 
   // squared distance between each of the 3 halls
   double a_to_b_distance;
@@ -109,20 +111,19 @@ void RosNavigationEnvironment::createRNG() {
 
   bool skip;
 
-
   // for each pair of halls and their associated vertices
 
   for (auto room_a = rooms_.begin(); room_a != rooms_.end(); ++room_a) {
     for (auto room_b = room_a + 1; room_b != rooms_.end(); ++room_b) {
-      skip = false;
 
+      // set skip flag to false
+      skip = false;
       // get the squared distance between a and b
       a_to_b_distance = pow(room_a->getCenterX() - room_b->getCenterX(), 2) +
                         pow(room_a->getCenterY() - room_b->getCenterY(), 2);
 
       // loop through all other halls, that are not a or b
       for (auto room_c = rooms_.begin(); room_c != rooms_.end(); ++room_c) {
-
         if (room_c == room_a || room_c == room_b) {
           continue;
         }
@@ -148,7 +149,7 @@ void RosNavigationEnvironment::createRNG() {
 
       // if this (a, b) pair was never skipped, it should be an edge
       if (!skip) {
-        room_graph_.add_edge(&*room_a, &*room_b);
+        room_graph_.add_edge(&(*room_a), &(*room_b));
       }
     }
   }
@@ -165,6 +166,8 @@ void RosNavigationEnvironment::connectRooms() {
 
   const Room *room_a;
   const Room *room_b;
+
+  std::vector<Room> corridors;
 
   // iterate trough all edges
   for (const std::pair<Room *, Room *> &edge : room_graph_.edges()) {
@@ -185,8 +188,6 @@ void RosNavigationEnvironment::connectRooms() {
     b_x = static_cast<int64_t>(room_b->getCenterX());
     b_y = static_cast<int64_t>(room_b->getCenterY());
 
-    assert(a_x <= b_x);
-
     // the deltas from A to B
     delta_x = static_cast<int64_t>(b_x - a_x);
     delta_y = static_cast<int64_t>(b_y - a_y);
@@ -194,13 +195,18 @@ void RosNavigationEnvironment::connectRooms() {
 
     // randomly bend clockwise or counter clockwise
     if (random_->next_rand() % 2) {
-      rooms_.push_back(Room(a_x, a_y, std::abs(delta_x) + corridor_width_, corridor_width_)); // horizontal
-      rooms_.push_back(Room(b_x, std::min(a_y, b_y), corridor_width_, std::abs(delta_y))); // vertical
+      corridors.push_back(Room(a_x, a_y, std::abs(delta_x) + corridor_width_, corridor_width_)); // horizontal
+      corridors.push_back(Room(b_x, std::min(a_y, b_y), corridor_width_, std::abs(delta_y))); // vertical
     } else {
-      rooms_.push_back(Room(a_x, std::min(a_y, b_y), corridor_width_, std::abs(delta_y))); // same as above
-      rooms_.push_back(Room(a_x, b_y, std::abs(delta_x), corridor_width_)); // swapped horizontal and vertical
+      corridors.push_back(Room(a_x, std::min(a_y, b_y), corridor_width_, std::abs(delta_y))); // same as above
+      corridors.push_back(Room(a_x, b_y, std::abs(delta_x), corridor_width_)); // swapped horizontal and vertical
     }
   }
 
+  rooms_.insert(
+      rooms_.end(),
+      std::make_move_iterator(corridors.begin()),
+      std::make_move_iterator(corridors.end())
+  );
 }
 
