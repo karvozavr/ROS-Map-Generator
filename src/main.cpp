@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 
         ("obstacles,o", boost::program_options::bool_switch(&obstacles),
          "generate obstacles inside rooms (false by default)")
-        
+
         ("complexity,c", boost::program_options::value(&room_amount)->required(),
          "complexity of environment (aka number of rooms)")
 
@@ -55,8 +55,7 @@ int main(int argc, char *argv[]) {
 
         ("name,n", boost::program_options::value(&out_file), "output file name")
 
-        ("random-seed", boost::program_options::value(&seed), "seed for pseudo-random number generation")
-        ;
+        ("random-seed", boost::program_options::value(&seed), "seed for pseudo-random number generation");
 
 
     boost::program_options::variables_map variables_map;
@@ -79,7 +78,7 @@ int main(int argc, char *argv[]) {
       room_amount = 1;
     }
 
-    int64_t min_size = static_cast<int64_t>(robot_size / resolution) * 2;
+    int64_t min_size = static_cast<int64_t>(robot_size / resolution) * 4;
     int64_t max_size = min_size * 2;
 
     if (variables_map.count("min-size")) {
@@ -87,8 +86,12 @@ int main(int argc, char *argv[]) {
       max_size = std::max(static_cast<int64_t>(actual_max_size / resolution), min_size + 1);
     }
 
-    int64_t corridor_width = std::max(static_cast<int64_t>((robot_size / resolution)),
-        static_cast<int64_t>(actual_corridor_width / resolution));
+    int64_t corridor_width = static_cast<int64_t>((robot_size / resolution)) * 2;
+
+    if (variables_map.count("corridor-width")) {
+      corridor_width = std::max(static_cast<int64_t>((robot_size / resolution)),
+                                static_cast<int64_t>(actual_corridor_width / resolution));
+    }
 
     size_t map_size = static_cast<size_t>(std::sqrt(room_amount) * (min_size + max_size) * 2);
 
