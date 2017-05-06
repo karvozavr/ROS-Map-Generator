@@ -79,11 +79,12 @@ int main(int argc, char *argv[]) {
       room_amount = 1;
     }
 
-    int64_t min_size = static_cast<int64_t>(robot_size / resolution);
-    int64_t max_size = 0;
+    int64_t min_size = static_cast<int64_t>(robot_size / resolution) * 2;
+    int64_t max_size = min_size * 2;
+
     if (variables_map.count("min-size")) {
       min_size = std::max(min_size, static_cast<int64_t>(actual_min_size / resolution));
-      max_size = static_cast<int64_t>(actual_max_size / resolution);
+      max_size = std::max(static_cast<int64_t>(actual_max_size / resolution), min_size + 1);
     }
 
     int64_t corridor_width = std::max(static_cast<int64_t>((robot_size / resolution)),

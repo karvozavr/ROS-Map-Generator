@@ -10,7 +10,7 @@
 #include <chrono>
 #include <random>
 
-template<typename T, typename distribution_type = std::normal_distribution<>>
+template<typename T>
 class Randomizer {
  public:
   /**
@@ -19,8 +19,7 @@ class Randomizer {
    */
   Randomizer(int64_t seed = std::chrono::system_clock::now().time_since_epoch().count())
       : seed_(seed),
-        random_generator_(seed),
-        distribution_(distribution_type(INT64_MAX / 4, INT64_MAX / 16)) {}
+        random_generator_(seed) {}
 
   /**
    * get random number
@@ -31,12 +30,11 @@ class Randomizer {
  private:
   int64_t seed_;
   std::mt19937 random_generator_;
-  distribution_type distribution_;
 };
 
-template<typename T, typename distribution_type>
-T Randomizer<T, distribution_type>::next_rand() {
-  T val = static_cast<T>(distribution_(random_generator_)) + 2;
+template<typename T>
+T Randomizer<T>::next_rand() {
+  T val = static_cast<T>(random_generator_()) + 2;
   return val;
 }
 

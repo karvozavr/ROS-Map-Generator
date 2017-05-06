@@ -13,10 +13,10 @@ RosNavigationEnvironment::RosNavigationEnvironment(size_t amount,
   for (int i = 0; i < amount; ++i) {
     rooms_.push_back(Room(random_,
                           obstacles ? corridor_width : 0,
-                          static_cast<int64_t>(width / 2),
-                          static_cast<int64_t>(height / 2),
-                          std::abs(random_->next_rand()) % max_size + min_size,
-                          std::abs(random_->next_rand()) % max_size + min_size
+                          static_cast<int64_t>((width / 2) + std::pow(-1, rand() % 2) * (std::abs(random_->next_rand()) % (width / 8))),
+                          static_cast<int64_t>((height / 2) + std::pow(-1, rand() % 2) * (std::abs(random_->next_rand()) % (height / 8))),
+                          std::abs(random_->next_rand()) % (max_size - min_size) + min_size,
+                          std::abs(random_->next_rand()) % (max_size - min_size) + min_size
     ));
   }
 
