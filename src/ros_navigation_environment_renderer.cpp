@@ -1,3 +1,10 @@
+/*
+ * ROS map generator
+ *  ros_navigation_environment_renderer.cpp
+ *
+ * Created by Dmitriy Abramov (karvozavr@gmail.com) April, 2017
+ */
+
 #include "ros_navigation_environment_renderer.h"
 
 void RosNavigationEnvironmentRenderer::render() {
@@ -78,7 +85,7 @@ void RosNavigationEnvironmentRenderer::save_to_pgm() {
 
   for (int64_t y = min_y; y < max_y; ++y) {
     for (int64_t x = min_x; x < max_x; ++x) {
-      out_stream_.write(reinterpret_cast<char*>(&(space[x][y])), sizeof(uint8_t));
+      out_stream_.write(reinterpret_cast<char *>(&(space[x][y])), sizeof(uint8_t));
     }
   }
 }

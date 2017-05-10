@@ -1,3 +1,10 @@
+/*
+ * ROS map generator
+ *  room.cpp
+ *
+ * Created by Dmitriy Abramov (karvozavr@gmail.com) April, 2017
+ */
+
 #include "room.h"
 
 int64_t Room::getTop() const {

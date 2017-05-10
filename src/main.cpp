@@ -1,3 +1,10 @@
+/*
+ * ROS map generator
+ *  main.cpp
+ *
+ * Created by Dmitriy Abramov (karvozavr@gmail.com) April, 2017
+ */
+
 #include <iostream>
 #include "ros_navigation_environment.h"
 #include "ros_navigation_environment_renderer.h"

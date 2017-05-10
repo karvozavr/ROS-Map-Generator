@@ -1,6 +1,9 @@
-//
-// Created by karvozavr on 30/04/17.
-//
+/*
+ * ROS map generator
+ *  randomizer.h
+ *
+ * Created by Dmitriy Abramov (karvozavr@gmail.com) April, 2017
+ */
 
 #ifndef ROS_MAP_GENERATOR_RANDOMIZER_H
 #define ROS_MAP_GENERATOR_RANDOMIZER_H

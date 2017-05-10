@@ -1,6 +1,8 @@
 /*
- * SpaceGenerator class used for generation of space containing halls connected by corridors.
+ * ROS map generator
+ *  ros_navigation_environment.h
  *
+ * Created by Dmitriy Abramov (karvozavr@gmail.com) April, 2017
  */
 
 #ifndef ROS_MAP_GENERATOR_SPACE_GENERATOR_H

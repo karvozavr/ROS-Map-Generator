@@ -1,3 +1,10 @@
+/*
+ * ROS map generator
+ *  graph.h
+ *
+ * Created by Dmitriy Abramov (karvozavr@gmail.com) April, 2017
+ */
+
 #ifndef ROS_MAP_GENERATOR_GRAPH_H
 #define ROS_MAP_GENERATOR_GRAPH_H
 

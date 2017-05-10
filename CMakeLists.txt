@@ -1,3 +1,10 @@
+#
+# ROS map generator
+#  CMakeLists.txt
+#
+# Created by Dmitriy Abramov (karvozavr@gmail.com) April, 2017
+#
+
 cmake_minimum_required(VERSION 3.5)
 project(map_generator)
 

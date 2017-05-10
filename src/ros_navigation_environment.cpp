@@ -1,3 +1,10 @@
+/*
+ * ROS map generator
+ *  ros_navigation_environment.cpp
+ *
+ * Created by Dmitriy Abramov (karvozavr@gmail.com) April, 2017
+ */
+
 #include "ros_navigation_environment.h"
 
 RosNavigationEnvironment::RosNavigationEnvironment(size_t amount,

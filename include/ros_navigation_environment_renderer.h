@@ -1,3 +1,10 @@
+/*
+ * ROS map generator
+ *  ros_navigation_environment_renderer.h
+ *
+ * Created by Dmitriy Abramov (karvozavr@gmail.com) May, 2017
+ */
+
 #ifndef ROS_MAP_GENERATOR_ROS_MAP_PRINTER_H
 #define ROS_MAP_GENERATOR_ROS_MAP_PRINTER_H
 
