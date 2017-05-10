@@ -19,6 +19,12 @@ class RosNavigationEnvironmentRenderer {
   std::ostream &out_stream_;
   RosNavigationEnvironment &environment_;
   std::vector<std::vector<uint8_t>> space;
+
+  enum Color {
+    black = 0,
+    gray = 204,
+    white = 255
+  };
 };
 
 

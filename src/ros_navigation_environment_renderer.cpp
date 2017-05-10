@@ -12,14 +12,14 @@ void RosNavigationEnvironmentRenderer::render() {
 
     for (int64_t x = room.getLeft(); x < room.getRight(); ++x) {
       for (int64_t y = room.getBottom(); y < room.getTop(); ++y) {
-        space[x][y] = 255;
+        space[x][y] = Color::white;
       }
     }
 
     for (const Room &obstacle : room.obstacles()) {
       for (int64_t x = obstacle.getLeft(); x < obstacle.getRight(); ++x) {
         for (int64_t y = obstacle.getBottom(); y < obstacle.getTop(); ++y) {
-          space[x + room.getLeft()][y + room.getBottom()] = 0;
+          space[x + room.getLeft()][y + room.getBottom()] = Color::black;
         }
       }
     }
@@ -33,14 +33,14 @@ void RosNavigationEnvironmentRenderer::render() {
           if (x != 0 && y != 0 &&
               x < environment_.width() - 1 &&
               y < environment_.height() - 1 &&
-              space[x + k][y + l] == 255) {
+              space[x + k][y + l] == Color::white) {
             flag = false;
           }
         }
       }
 
       if (flag && space[x][y] == 0) {
-        space[x][y] = 204;
+        space[x][y] = Color::gray;
       }
     }
   }
